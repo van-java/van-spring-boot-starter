@@ -8,6 +8,10 @@
 
 Spring Boot integration for the [Van](https://github.com/vanengine/van) template engine — write templates with Vue SFC syntax, render server-side HTML with zero Node.js dependency.
 
+<p>
+  <a href="README.md">English</a> · <a href="docs/i18n/zh-CN/README.md">简体中文</a>
+</p>
+
 ## Quick Start
 
 ### 1. Add dependency
