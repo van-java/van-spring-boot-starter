@@ -1,6 +1,5 @@
 package dev.vanengine.spring;
 
-import dev.vanengine.core.VanCompiler;
 import dev.vanengine.core.VanEngine;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -21,18 +20,13 @@ public class VanAutoConfiguration {
         this.properties = properties;
     }
 
-    @Bean(initMethod = "init", destroyMethod = "close")
-    public VanCompiler vanCompiler() {
-        return new VanCompiler();
-    }
-
     @Bean
-    public VanEngine vanEngine(VanCompiler compiler) {
-        VanEngine engine = new VanEngine(compiler);
+    public VanEngine vanEngine() {
+        VanEngine.Builder builder = VanEngine.builder();
         if (properties.getThemesDir() != null) {
-            engine.setBasePath(Path.of(properties.getThemesDir(), properties.getThemeDefault()));
+            builder.basePath(Path.of(properties.getThemesDir(), properties.getThemeDefault()));
         }
-        return engine;
+        return builder.build();
     }
 
     @Bean

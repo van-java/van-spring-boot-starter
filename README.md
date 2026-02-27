@@ -92,8 +92,10 @@ public class ApiController {
                 </template>
                 """;
 
-        return engine.compileLiteral(template,
-                Map.of("title", "Van API", "message", "Compiled via VanEngine"));
+        return engine.compileLiteral(
+                template,
+                Map.of("title", "Van API", "message", "Compiled via VanEngine")
+        );
     }
 }
 ```
@@ -145,12 +147,12 @@ The compiler binary is auto-downloaded from [GitHub Releases](https://github.com
 
 ## Requirements
 
-- Java 25+
+- Java 17+
 - Spring Boot 4.0+
 
 ## Related
 
-- [**Van**](https://github.com/vanengine/van) — Core template engine (Rust / WASM)
+- [**van**](https://github.com/vanengine/van) — Core template engine (Rust / WASM)
 - [**van-java-core**](https://github.com/van-java/van-java-core) — Pure Java compilation engine (used by this starter)
 
 ## License

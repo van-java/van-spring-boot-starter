@@ -92,8 +92,10 @@ public class ApiController {
                 </template>
                 """;
 
-        return engine.compileLiteral(template,
-                Map.of("title", "Van API", "message", "Compiled via VanEngine"));
+        return engine.compileLiteral(
+                template,
+                Map.of("title", "Van API", "message", "Compiled via VanEngine")
+        );
     }
 }
 ```
@@ -145,12 +147,12 @@ van:
 
 ## 环境要求
 
-- Java 25+
+- Java 17+
 - Spring Boot 4.0+
 
 ## 相关项目
 
-- [**Van**](https://github.com/vanengine/van) — 核心模板引擎（Rust / WASM）
+- [**van**](https://github.com/vanengine/van) — 核心模板引擎（Rust / WASM）
 - [**van-java-core**](https://github.com/van-java/van-java-core) — 纯 Java 编译引擎（本 starter 的底层依赖）
 
 ## 许可证
