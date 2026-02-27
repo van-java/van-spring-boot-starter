@@ -1,7 +1,7 @@
 package dev.vanengine.spring;
 
 import dev.vanengine.core.VanCompiler;
-import dev.vanengine.core.VanRenderer;
+import dev.vanengine.core.VanEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -30,13 +31,11 @@ public class VanViewResolver implements ViewResolver, Ordered {
 
     private static final Logger log = LoggerFactory.getLogger(VanViewResolver.class);
 
-    private final VanRenderer renderer;
-    private final VanCompiler compiler;
+    private final VanEngine engine;
     private final VanProperties properties;
 
-    public VanViewResolver(VanRenderer renderer, VanCompiler compiler, VanProperties properties) {
-        this.renderer = renderer;
-        this.compiler = compiler;
+    public VanViewResolver(VanEngine engine, VanProperties properties) {
+        this.engine = engine;
         this.properties = properties;
     }
 
@@ -72,30 +71,23 @@ public class VanViewResolver implements ViewResolver, Ordered {
     }
 
     private View compileFromFile(Path vanFile, Path basePath) {
-        try {
-            VanCompiler.CompiledResult result = compiler.compile(vanFile, basePath);
-            return new VanView(renderer, result.html());
-        } catch (IOException e) {
-            log.error("Failed to compile {}", vanFile, e);
-            return null;
-        }
+        String relativePath = basePath.relativize(vanFile).toString()
+                .replace(java.io.File.separatorChar, '/');
+        return new VanView(engine, relativePath, null);
     }
 
     private View compileFromClasspath(String resourcePath, String basePath) {
         try {
-            // Read the entry file from classpath
             ClassPathResource resource = new ClassPathResource(resourcePath);
             String content = resource.getContentAsString(StandardCharsets.UTF_8);
 
             String entryPath = resourcePath.substring(basePath.length() + 1); // strip "themes/{theme}/"
-            Map<String, String> files = new java.util.HashMap<>();
+            Map<String, String> files = new HashMap<>();
             files.put(entryPath, content);
 
-            // Collect imported .van files from classpath
             collectClasspathImports(content, resourcePath, basePath, files);
 
-            VanCompiler.CompiledResult result = compiler.compile(entryPath, files);
-            return new VanView(renderer, result.html());
+            return new VanView(engine, entryPath, files);
         } catch (IOException e) {
             log.error("Failed to compile classpath resource {}", resourcePath, e);
             return null;
