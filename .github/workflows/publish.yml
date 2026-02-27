@@ -4,10 +4,12 @@ on:
   push:
     tags:
       - 'v*'
+  repository_dispatch:
+    types: [van-released]
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to publish (e.g. 0.1.0)'
+        description: 'Version to publish (e.g. 0.1.17)'
         required: true
 
 permissions:
@@ -33,6 +35,8 @@ jobs:
         run: |
           if [ "${{ github.event_name }}" = "push" ]; then
             VERSION=${GITHUB_REF_NAME#v}
+          elif [ "${{ github.event_name }}" = "repository_dispatch" ]; then
+            VERSION="${{ github.event.client_payload.van_core_version }}"
           else
             VERSION="${{ github.event.inputs.version }}"
           fi
@@ -43,9 +47,8 @@ jobs:
         run: |
           VERSION=${{ steps.version.outputs.version }}
           sed -i "s/version = '.*'/version = '${VERSION}'/" build.gradle
-          sed -i "s/van-java-core:[^']*/van-java-core:${VERSION}/" build.gradle
           echo "--- build.gradle ---"
-          grep -E "version|van-java-core" build.gradle | head -3
+          grep 'version' build.gradle | head -2
 
       - name: Build
         run: gradle build
